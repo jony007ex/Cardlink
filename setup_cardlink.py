@@ -1,52 +1,30 @@
-name: Build CardLink Android APK
+#!/usr/bin/env python3
+import os
+from pathlib import Path
 
-on:
-  push:
-    branches: [ "main", "master" ]
-  workflow_dispatch:
+FILES = {}
 
-jobs:
-  build-apk:
-    runs-on: ubuntu-latest
+FILES["settings.gradle.kts"] = """pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+rootProject.name = "CardLink"
+include(":app")
+"""
+FILES["build.gradle.kts"] = """plugins {
+    id("com.android.application") version "8.5.2" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.24" apply false
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.24" apply false
+}
+"""
+FILES["gradle.properties"] = "org.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8\nandroid.useAndroidX=true\nkotlin.code.style=official\nandroid.nonTransitiveRClass=true"
+FILES["app/proguard-rules.pro"] = "-keep class com.cardlink.app.data.model.** { *; }\n-keep class com.cardlink.app.util.** { *; }\n-keepattributes *Annotation*, InnerClasses, Signature\n-dontwarn com.google.zxing.**\n-dontwarn com.google.mlkit.**"
 
-    steps:
-      - name: 1. Checkout Repository
-        uses: actions/checkout@v4
+def main():
+    for rel_path, content in FILES.items():
+        path = Path(rel_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content.strip() + "\n", encoding="utf-8")
+    print("Project files created successfully.")
 
-      - name: 2. Generate Android Project Files
-        run: python3 setup_cardlink.py
-
-      - name: 3. Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: 4. Setup Gradle 8.7
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.7'
-
-      - name: 5. Build Debug APK
-        run: gradle assembleDebug --no-daemon --stacktrace
-
-      - name: 6. Generate Keystore & Build Signed Release APK
-        run: |
-          keytool -genkey -v -keystore cardlink-release.jks \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -alias cardlink \
-            -storepass cardlink123 -keypass cardlink123 \
-            -dname "CN=CardLink, OU=Mobile, O=CardLink, L=Dhaka, S=Dhaka, C=BD"
-          gradle assembleRelease --no-daemon --stacktrace
-
-      - name: 7. Upload Debug APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CardLink-Debug-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
-
-      - name: 8. Upload Signed Release APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CardLink-Signed-Release-APK
-          path: app/build/outputs/apk/release/app-release.apk
+if __name__ == "__main__":
+    main()
