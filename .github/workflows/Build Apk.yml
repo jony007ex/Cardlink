@@ -15,7 +15,8 @@ jobs:
 
       # THIS STEP EXTRACTS THE ZIP FILE WITH THE PERFECT FOLDER STRUCTURE
       - name: 2. Unzip Project Files
-        run: unzip CardLink_Android_Project.zip
+        run: unzip -o CardLink_Android_Project-v2.zip
+
 
       - name: 3. Set up JDK 17
         uses: actions/setup-java@v4
