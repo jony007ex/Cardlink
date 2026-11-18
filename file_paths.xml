@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<paths>
-    <cache-path name="shared_cards" path="cards/" />
-    <files-path name="scanned_cards" path="scanned_cards/" />
-</paths>
