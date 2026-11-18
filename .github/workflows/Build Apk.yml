@@ -15,7 +15,7 @@ jobs:
 
       - name: 2. Unzip Project Files & Fix KSP Plugin
         run: |
-          unzip -o CardLink_Android_Project-v6.1.zip
+          unzip -o CardLink_Android_Project-v8.zip
           sed -i '/com.google.devtools.ksp/d' build.gradle.kts
           sed -i 's/id("com.google.devtools.ksp")/id("org.jetbrains.kotlin.kapt")/g' app/build.gradle.kts
           sed -i 's/ksp("androidx.room:room-compiler/kapt("androidx.room:room-compiler/g' app/build.gradle.kts
