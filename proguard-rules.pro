@@ -1,5 +1,0 @@
--keep class com.cardlink.app.data.model.** { *; }
--keep class com.cardlink.app.util.** { *; }
--keepattributes *Annotation*, InnerClasses, Signature
--dontwarn com.google.zxing.**
--dontwarn com.google.mlkit.**
