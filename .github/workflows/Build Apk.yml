@@ -12,10 +12,10 @@ jobs:
     steps:
       - name: 1. Checkout Repository
         uses: actions/checkout@v4
-
-      - name: 2. Unzip Project Files & Fix KSP Plugin
+      - name: 2. Unzip Project Files & Fix Intent Constant
         run: |
-          unzip -o CardLink_Android_Project-v9.zip
+          unzip -o CardLink_Android_Project-v9.1.zip
+          sed -i 's/Intent.ACTION_TIME_SET/Intent.ACTION_TIME_CHANGED/g' app/src/main/java/com/cardlink/app/receiver/FollowUpReceivers.kt
           sed -i '/com.google.devtools.ksp/d' build.gradle.kts
           sed -i 's/id("com.google.devtools.ksp")/id("org.jetbrains.kotlin.kapt")/g' app/build.gradle.kts
           sed -i 's/ksp("androidx.room:room-compiler/kapt("androidx.room:room-compiler/g' app/build.gradle.kts
