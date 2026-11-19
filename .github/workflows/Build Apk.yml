@@ -1,8 +1,8 @@
-name: Build CardLink Android APK
+name: Build CardLink APK
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -12,15 +12,9 @@ jobs:
     steps:
       - name: 1. Checkout Repository
         uses: actions/checkout@v4
-      - name: 2. Unzip Project Files & Fix Intent Constant
-        run: |
-          unzip -o CardLink_Android_Project-v13.zip
-          sed -i '120,123d' app/src/main/java/com/cardlink/app/MainActivity.kt
-          sed -i 's/(3.5" × 2"/(3.5\\" × 2\\"/g' app/src/main/java/com/cardlink/app/MainActivity.kt
-          sed -i 's/Intent.ACTION_TIME_SET/Intent.ACTION_TIME_CHANGED/g' app/src/main/java/com/cardlink/app/receiver/FollowUpReceivers.kt
-          sed -i '/com.google.devtools.ksp/d' build.gradle.kts
-          sed -i 's/id("com.google.devtools.ksp")/id("org.jetbrains.kotlin.kapt")/g' app/build.gradle.kts
-          sed -i 's/ksp("androidx.room:room-compiler/kapt("androidx.room:room-compiler/g' app/build.gradle.kts
+
+      - name: 2. Unzip Project Files
+        run: unzip -o CardLink_Android_Project-v13.zip
 
       - name: 3. Set up JDK 17
         uses: actions/setup-java@v4
@@ -38,11 +32,15 @@ jobs:
 
       - name: 6. Generate Keystore & Build Signed Release APK
         run: |
-          keytool -genkey -v -keystore cardlink-release.jks \
-            -keyalg RSA -keysize 2048 -validity 10000 \
+          keytool -genkeypair -v \
+            -keystore cardlink-release.jks \
             -alias cardlink \
-            -storepass cardlink123 -keypass cardlink123 \
-            -dname "CN=CardLink, OU=Mobile, O=CardLink, L=Dhaka, S=Dhaka, C=BD"
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass cardlink123 \
+            -keypass cardlink123 \
+            -dname "CN=CardLink, OU=Mobile, O=CardLink, L=Dhaka, ST=Dhaka, C=BD"
           gradle assembleRelease --no-daemon --stacktrace
 
       - name: 7. Upload Debug APK Artifact
