@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
       - name: 2. Unzip Project Files & Fix Intent Constant
         run: |
-          unzip -o CardLink_Android_Project-v11.zip
+          unzip -o CardLink_Android_Project-v12.zip
           sed -i 's/(3.5" × 2"/(3.5\\" × 2\\"/g' app/src/main/java/com/cardlink/app/MainActivity.kt
           sed -i 's/Intent.ACTION_TIME_SET/Intent.ACTION_TIME_CHANGED/g' app/src/main/java/com/cardlink/app/receiver/FollowUpReceivers.kt
           sed -i '/com.google.devtools.ksp/d' build.gradle.kts
