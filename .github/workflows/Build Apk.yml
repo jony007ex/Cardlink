@@ -47,7 +47,9 @@ jobs:
 
       - name: 7. Verify APK Signing Fingerprint
         run: |
-          keytool -printcert -jarfile app/build/outputs/apk/release/app-release.apk | grep -E "SHA256:|Owner:"
+          ls -lh app/build/outputs/apk/release/
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -n 1)
+          "$APKSIGNER" verify --print-certs app/build/outputs/apk/release/app-release.apk | grep -E "Signer #1 certificate (DN|SHA-256)"
 
       - name: 8. Upload Signed Release APK Artifact
         uses: actions/upload-artifact@v4
