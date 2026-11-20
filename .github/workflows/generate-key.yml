@@ -1,0 +1,36 @@
+name: Generate Permanent Keystore
+
+on:
+  workflow_dispatch:
+
+jobs:
+  make-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Generate Keystore and Base64
+        run: |
+          keytool -genkeypair -v \
+            -keystore cardlink-release.jks \
+            -alias cardlink \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass CardLink@2026 \
+            -keypass CardLink@2026 \
+            -dname "CN=CardLink, OU=Mobile, O=CardLink, L=Dhaka, ST=Dhaka, C=BD"
+          base64 -w 0 cardlink-release.jks > keystore_base64.txt
+
+      - name: Upload Keystore Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: cardlink-permanent-keystore
+          path: |
+            cardlink-release.jks
+            keystore_base64.txt
+            
