@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 2. Unzip Project Files
-        run: unzip -o CardLink_Android_Project-v27.zip
+        run: unzip -o CardLink_Android_Project-v27.1.zip
 
       - name: 3. Set up JDK 17
         uses: actions/setup-java@v4
